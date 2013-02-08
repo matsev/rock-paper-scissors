@@ -15,9 +15,11 @@ public class TheApplicationService implements ApplicationService {
     private final Class<?> aggregateType;
     private final Handler<Command> commandHandler;
     private final Handler<Event> eventHandler;
+    private HighScoreProjection highScoreProjection;
 
     public TheApplicationService(EventStore eventStore, Class<?> aggregateType) {
-        this.eventStore = eventStore;
+        this.highScoreProjection = new HighScoreProjection();
+        this.eventStore = new DelegatingEventStore(eventStore, highScoreProjection);
         this.aggregateType = aggregateType;
         this.commandHandler = new TheHandler<Command>();
         this.eventHandler = new TheHandler<Event>();
