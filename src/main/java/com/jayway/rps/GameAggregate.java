@@ -17,6 +17,7 @@ public class GameAggregate  {
 
     private UUID gameId;
 
+
     @EventHandler
     public void handle(GameCreated gameCreated) {
         this.gameId = gameCreated.getEntityId();
