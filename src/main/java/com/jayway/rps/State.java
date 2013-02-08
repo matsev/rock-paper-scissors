@@ -1,0 +1,15 @@
+package com.jayway.rps;
+
+public enum State {
+
+    GAME_STARTED,
+    GAME_ACCEPTED,
+    GAME_WAITING_FOR_ROUND,
+    GAME_COMPLETED,
+
+    ROUND_STARTED,
+    ROUND_TIMED_OUT,
+    ROUND_WAITING_FOR_PLAYER,
+    ROUND_TIE,
+    ROUND_WINNER
+}
