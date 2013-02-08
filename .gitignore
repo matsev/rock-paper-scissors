@@ -1,0 +1,18 @@
+target
+*.iws
+*.ipr
+*.iml
+.classpath
+.project
+.settings
+.springBeans
+.idea
+classes/
+coverage-error.log
+.~*#
+.DS_Store
+# Ignore temporary files
+*~
+.vagrant
+# Ignore directory setting files
+.directory
