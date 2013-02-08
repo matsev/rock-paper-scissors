@@ -36,7 +36,7 @@ public class TheApplicationService implements ApplicationService {
                 eventStore.store(command.entityId(), stream.version(), newEvents);
 
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
 

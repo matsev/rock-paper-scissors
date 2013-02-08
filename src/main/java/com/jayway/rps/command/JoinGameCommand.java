@@ -16,4 +16,8 @@ public class JoinGameCommand implements Command {
     public UUID entityId() {
         return gameId;
     }
+
+    public String getPlayerId() {
+        return playerId;
+    }
 }

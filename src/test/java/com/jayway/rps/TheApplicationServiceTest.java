@@ -2,15 +2,15 @@ package com.jayway.rps;
 
 import com.jayway.rps.command.CreateGameCommand;
 import com.jayway.rps.command.JoinGameCommand;
-import com.jayway.rps.event.Event;
-import com.jayway.rps.event.GameCreatedEvent;
-import com.jayway.rps.event.GameStartedEvent;
+import com.jayway.rps.command.MakeChoiceCommand;
+import com.jayway.rps.event.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.UUID;
 
+import static com.jayway.rps.command.Choice.PAPER;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -37,7 +37,8 @@ public class TheApplicationServiceTest {
         EventStream events = eventStore.loadEventStream(gameId);
 
         Iterator<Event> iterator = events.iterator();
-        assertThat(iterator.next(), instanceOf(GameCreatedEvent.class));
+        GameCreatedEvent gameCreatedEvent = (GameCreatedEvent) iterator.next();
+        assertThat(gameCreatedEvent.getPlayerId(), is(playerA));
         assertThat(iterator.hasNext(), is(false));
     }
 
@@ -48,7 +49,31 @@ public class TheApplicationServiceTest {
                 new JoinGameCommand(playerB, gameId));
         EventStream events = eventStore.loadEventStream(gameId);
 
-        assertThat(events.getLastEvent(), instanceOf(GameStartedEvent.class));
+        GameStartedEvent gameStartedEvent = (GameStartedEvent) events.getLastEvent();
+        assertThat(gameStartedEvent.getPlayerId(), is(playerB));
+    }
+
+    @Test
+    public void firstChoice() {
+        gameId = UUID.randomUUID();
+        applicationService.handle(new CreateGameCommand(playerA, gameId),
+                new JoinGameCommand(playerB, gameId),
+                new MakeChoiceCommand(playerA, PAPER, gameId));
+        EventStream events = eventStore.loadEventStream(gameId);
+
+        assertThat(events.getLastEvent(), instanceOf(ChoiceMadeEvent.class));
+    }
+
+    @Test
+    public void secondChoiceDraw() {
+        gameId = UUID.randomUUID();
+        applicationService.handle(new CreateGameCommand(playerA, gameId),
+                new JoinGameCommand(playerB, gameId),
+                new MakeChoiceCommand(playerA, PAPER, gameId),
+                new MakeChoiceCommand(playerB, PAPER, gameId));
+        EventStream events = eventStore.loadEventStream(gameId);
+
+        assertThat(events.getLastEvent(), instanceOf(RoundTiedEvent.class));
     }
 
 }
