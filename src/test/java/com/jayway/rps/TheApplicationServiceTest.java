@@ -78,7 +78,7 @@ public class TheApplicationServiceTest {
     }
 
     @Test
-    public void secondChoiceWinner() {
+    public void secondChoiceRoundWinner() {
         gameId = UUID.randomUUID();
         applicationService.handle(new CreateGameCommand(playerA, gameId, 2),
                 new JoinGameCommand(playerB, gameId),
@@ -95,6 +95,35 @@ public class TheApplicationServiceTest {
         gameId = UUID.randomUUID();
         applicationService.handle(new CreateGameCommand(playerA, gameId, 1),
                 new JoinGameCommand(playerB, gameId),
+                new MakeChoiceCommand(playerA, ROCK, gameId),
+                new MakeChoiceCommand(playerB, PAPER, gameId));
+        EventStream events = eventStore.loadEventStream(gameId);
+
+        GameWonEvent gameWonEvent = (GameWonEvent) events.getLastEvent();
+        assertThat(gameWonEvent.getWinner(), is(playerB));
+    }
+
+    @Test
+    public void oneAndAHalfRound() {
+        gameId = UUID.randomUUID();
+        applicationService.handle(new CreateGameCommand(playerA, gameId, 2),
+                new JoinGameCommand(playerB, gameId),
+                new MakeChoiceCommand(playerA, ROCK, gameId),
+                new MakeChoiceCommand(playerB, PAPER, gameId),
+                new MakeChoiceCommand(playerA, ROCK, gameId));
+        EventStream events = eventStore.loadEventStream(gameId);
+
+
+        assertThat(events.getLastEvent(), instanceOf(ChoiceMadeEvent.class));
+    }
+
+    @Test
+    public void winnerForTwoRounds() {
+        gameId = UUID.randomUUID();
+        applicationService.handle(new CreateGameCommand(playerA, gameId, 2),
+                new JoinGameCommand(playerB, gameId),
+                new MakeChoiceCommand(playerA, ROCK, gameId),
+                new MakeChoiceCommand(playerB, PAPER, gameId),
                 new MakeChoiceCommand(playerA, ROCK, gameId),
                 new MakeChoiceCommand(playerB, PAPER, gameId));
         EventStream events = eventStore.loadEventStream(gameId);

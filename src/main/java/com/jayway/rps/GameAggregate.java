@@ -49,17 +49,23 @@ public class GameAggregate  {
     public List<? extends Event> handle(MakeChoiceCommand makeChoiceCommand) {
         switch (state) {
             case WAITING_FOR_ROUND :
+                if (firstChoice != null) {
+                    throw new IllegalStateException("did not expect firstChoice to be set when " + WAITING_FOR_ROUND);
+                }
                 //TODO if player have already made choice
+                //TODO check that player names have not changed since previous round
                 return asList(new ChoiceMadeEvent(makeChoiceCommand.getPlayerChoice()));
             case ROUND_WAITING_FOR_PLAYER:
                 //TODO if player have already made choice
+                //TODO check that player names have not changed since previous round
                 PlayerChoice secondChoice = makeChoiceCommand.getPlayerChoice();
                 // TODO implement game rules
                 if (firstChoice.getChoice() == ROCK && secondChoice.getChoice() == PAPER) {
                     List<Event> events = new ArrayList<Event>();
                     String winner = secondChoice.getPlayerId();
+                    events.add(new ChoiceMadeEvent(makeChoiceCommand.getPlayerChoice()));
                     events.add(new RoundWonEvent(winner));
-                    int numberOfWins = wins.get(winner).incrementAndGet();
+                    int numberOfWins = wins.get(winner).get() + 1;
                     if (numberOfWins == firstTo) {
                         events.add(new GameWonEvent(winner));
                     }
@@ -104,6 +110,27 @@ public class GameAggregate  {
                 }
                 break;
             default:
+                throw new IllegalStateException(state.toString());
         }
     }
+
+
+    @EventHandler
+    public void handle(RoundWonEvent roundWonEvent) {
+        if (state == ROUND_WINNER) {
+            state = WAITING_FOR_ROUND;
+            firstChoice = null;
+            wins.get(roundWonEvent.getWinner()).incrementAndGet();
+        } else {
+            throw new IllegalStateException(state.toString());
+        }
+    }
+
+
+    @EventHandler
+    public void handle(GameWonEvent gameWonEvent) {
+        state = COMPLETED;
+    }
+
+
 }
