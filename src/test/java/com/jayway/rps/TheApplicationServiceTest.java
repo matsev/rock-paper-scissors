@@ -44,8 +44,8 @@ public class TheApplicationServiceTest {
     @Test
     public void joinGame() {
         gameId = UUID.randomUUID();
-        applicationService.handle(new CreateGameCommand(playerA, gameId));
-        applicationService.handle(new JoinGameCommand(playerB, gameId));
+        applicationService.handle(new CreateGameCommand(playerA, gameId),
+                new JoinGameCommand(playerB, gameId));
         EventStream events = eventStore.loadEventStream(gameId);
 
         assertThat(events.getLastEvent(), instanceOf(GameStartedEvent.class));

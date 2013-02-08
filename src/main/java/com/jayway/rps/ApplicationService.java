@@ -7,6 +7,5 @@ import com.jayway.rps.command.Command;
  */
 public interface ApplicationService {
 
-    void handle(Command command);
-
+    void handle(Command... commands);
 }

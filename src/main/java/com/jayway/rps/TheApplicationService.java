@@ -24,18 +24,20 @@ public class TheApplicationService implements ApplicationService {
     }
 
     @Override
-    public void handle(Command command) {
-        EventStream stream = eventStore.loadEventStream(command.entityId());
-        try {
-            Object aggregate = aggregateType.newInstance();
-            for (Event event : stream) {
-                eventHandler.handle(aggregate,event);
-            }
-            List<Event> newEvents = commandHandler.handle(aggregate, command);
-            eventStore.store(command.entityId(), stream.version(), newEvents);
+    public void handle(Command... commands) {
+        for (Command command : commands) {
+            EventStream stream = eventStore.loadEventStream(command.entityId());
+            try {
+                Object aggregate = aggregateType.newInstance();
+                for (Event event : stream) {
+                    eventHandler.handle(aggregate,event);
+                }
+                List<Event> newEvents = commandHandler.handle(aggregate, command);
+                eventStore.store(command.entityId(), stream.version(), newEvents);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }
