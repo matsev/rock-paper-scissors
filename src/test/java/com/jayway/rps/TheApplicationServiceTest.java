@@ -151,4 +151,18 @@ public class TheApplicationServiceTest {
 
     }
 
+    @Test
+    public void oneDrawOneWonRoundEndsGame() {
+        applicationService.handle(new CreateGameCommand(playerA, gameId, 1),
+                new JoinGameCommand(playerB, gameId),
+                new MakeChoiceCommand(playerA, ROCK, gameId),
+                new MakeChoiceCommand(playerB, ROCK, gameId),
+                new MakeChoiceCommand(playerA, ROCK, gameId),
+                new MakeChoiceCommand(playerB, PAPER, gameId));
+        EventStream events = eventStore.loadEventStream(gameId);
+
+        GameWonEvent gameWonEvent = (GameWonEvent) events.getLastEvent();
+        assertThat(gameWonEvent.getWinner(), is(playerB));
+    }
+
 }
