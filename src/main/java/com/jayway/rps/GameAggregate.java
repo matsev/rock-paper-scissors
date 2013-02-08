@@ -60,6 +60,9 @@ public class GameAggregate  {
                 //TODO check that player names have not changed since previous round
                 PlayerChoice secondChoice = makeChoiceCommand.getPlayerChoice();
                 // TODO implement game rules
+                if (firstChoice.getChoice() == secondChoice.getChoice()) {
+                    return asList(new ChoiceMadeEvent(makeChoiceCommand.getPlayerChoice()), new RoundTiedEvent());
+                }
                 if (firstChoice.getChoice() == ROCK && secondChoice.getChoice() == PAPER) {
                     List<Event> events = new ArrayList<Event>();
                     String winner = secondChoice.getPlayerId();
@@ -118,9 +121,20 @@ public class GameAggregate  {
     @EventHandler
     public void handle(RoundWonEvent roundWonEvent) {
         if (state == ROUND_WINNER) {
+            wins.get(roundWonEvent.getWinner()).incrementAndGet();
             state = WAITING_FOR_ROUND;
             firstChoice = null;
-            wins.get(roundWonEvent.getWinner()).incrementAndGet();
+        } else {
+            throw new IllegalStateException(state.toString());
+        }
+    }
+
+
+    @EventHandler
+    public void handle(RoundTiedEvent roundTiedEvent) {
+        if (state == ROUND_TIE) {
+            state = WAITING_FOR_ROUND;
+            firstChoice = null;
         } else {
             throw new IllegalStateException(state.toString());
         }
@@ -131,6 +145,4 @@ public class GameAggregate  {
     public void handle(GameWonEvent gameWonEvent) {
         state = COMPLETED;
     }
-
-
 }
