@@ -21,6 +21,12 @@ public class TheEventStream implements EventStream {
     }
 
     @Override
+    public Event getLastEvent() {
+        return events.get(events.size() -1);
+    }
+
+
+    @Override
     public Iterator<Event> iterator() {
         return events.iterator();
     }

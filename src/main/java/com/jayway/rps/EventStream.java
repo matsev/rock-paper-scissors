@@ -6,4 +6,5 @@ public interface EventStream extends Iterable<Event> {
 
     long version();
 
+    Event getLastEvent();
 }

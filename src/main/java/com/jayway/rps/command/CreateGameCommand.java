@@ -2,13 +2,13 @@ package com.jayway.rps.command;
 
 import java.util.UUID;
 
-public class MakeChoice implements Command {
+public class CreateGameCommand implements Command {
 
-    private final Choice choice;
+    private final String playerId;
     private final UUID gameId;
 
-    public MakeChoice(Choice choice, UUID gameId) {
-        this.choice = choice;
+    public CreateGameCommand(String playerId, UUID gameId) {
+        this.playerId = playerId;
         this.gameId = gameId;
     }
 

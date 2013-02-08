@@ -1,8 +1,8 @@
 package com.jayway.rps;
 
-import com.jayway.rps.command.CreateGame;
+import com.jayway.rps.command.CreateGameCommand;
 import com.jayway.rps.event.Event;
-import com.jayway.rps.event.GameCreated;
+import com.jayway.rps.event.GameCreatedEvent;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,9 +27,9 @@ public class GameAggregateTest {
 
     @Test
     public void createGame() {
-        List<? extends Event> events = gameAggregate.handle(new CreateGame(playerA, gameId));
+        List<? extends Event> events = gameAggregate.handle(new CreateGameCommand(playerA, gameId));
 
         assertThat(events, hasSize(1));
-        assertThat(events.get(0), instanceOf(GameCreated.class));
+        assertThat(events.get(0), instanceOf(GameCreatedEvent.class));
     }
 }

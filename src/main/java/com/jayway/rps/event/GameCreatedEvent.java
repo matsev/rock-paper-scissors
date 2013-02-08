@@ -2,12 +2,12 @@ package com.jayway.rps.event;
 
 import java.util.UUID;
 
-public class GameCreated implements Event {
+public class GameCreatedEvent implements Event {
 
 
     private final UUID entityId;
 
-    public GameCreated(UUID entityId) {
+    public GameCreatedEvent(UUID entityId) {
         this.entityId = entityId;
     }
 
