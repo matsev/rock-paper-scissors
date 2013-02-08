@@ -16,11 +16,14 @@ import java.util.UUID;
 public class GameAggregate  {
 
     private UUID gameId;
+    private State state;
 
 
     @EventHandler
     public void handle(GameCreated gameCreated) {
-        this.gameId = gameCreated.getEntityId();
+        gameId = gameCreated.getEntityId();
+
+
     }
 
     @CommandHandler
