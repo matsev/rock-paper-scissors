@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.jayway.rps.State.*;
+import static com.jayway.rps.command.Choice.PAPER;
+import static com.jayway.rps.command.Choice.ROCK;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
@@ -50,6 +52,11 @@ public class GameAggregate  {
                 return asList(new ChoiceMadeEvent(makeChoiceCommand.getPlayerChoice()));
             case ROUND_WAITING_FOR_PLAYER:
                 //TODO if player have already made choice
+                PlayerChoice secondChoice = makeChoiceCommand.getPlayerChoice();
+                // TODO implement game rules
+                if (firstChoice.getChoice() == ROCK && secondChoice.getChoice() == PAPER) {
+                    return asList(new RoundWonEvent(secondChoice.getPlayerId()));
+                }
                 return asList(new RoundTiedEvent());
             default:
                 return emptyList();
@@ -77,7 +84,12 @@ public class GameAggregate  {
                 firstChoice = choiceMadeEvent.getPlayerChoice();
                 break;
             case ROUND_WAITING_FOR_PLAYER:
-                state = ROUND_TIE;
+                PlayerChoice secondChoice = choiceMadeEvent.getPlayerChoice();
+                if (secondChoice.getChoice() == firstChoice.getChoice()) {
+                    state = ROUND_TIE;
+                } else {
+                    state = ROUND_WINNER;
+                }
                 break;
             default:
         }
