@@ -7,4 +7,8 @@ public class GameWonEvent implements Event {
     public GameWonEvent(String playerId) {
         this.playerId = playerId;
     }
+
+    public String getWinner() {
+        return playerId;
+    }
 }

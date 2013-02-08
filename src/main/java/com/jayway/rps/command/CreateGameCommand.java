@@ -6,15 +6,12 @@ public class CreateGameCommand implements Command {
 
     private final String playerId;
     private final UUID gameId;
+    private final int firstTo;
 
-    /**
-     * TODO add firstTo
-     * @param playerId
-     * @param gameId
-     */
-    public CreateGameCommand(String playerId, UUID gameId) {
+    public CreateGameCommand(String playerId, UUID gameId, int firstTo) {
         this.playerId = playerId;
         this.gameId = gameId;
+        this.firstTo = firstTo;
     }
 
     @Override
@@ -24,5 +21,9 @@ public class CreateGameCommand implements Command {
 
     public String getPlayerId() {
         return playerId;
+    }
+
+    public int getFirstTo() {
+        return firstTo;
     }
 }

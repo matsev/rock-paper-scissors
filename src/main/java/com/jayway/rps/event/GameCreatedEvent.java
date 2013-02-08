@@ -6,11 +6,13 @@ public class GameCreatedEvent implements Event {
 
 
     private final UUID entityId;
-    private String playerId;
+    private final String playerId;
+    private final int firstTo;
 
-    public GameCreatedEvent(UUID entityId, String playerId) {
+    public GameCreatedEvent(UUID entityId, String playerId, int firstTo) {
         this.entityId = entityId;
         this.playerId = playerId;
+        this.firstTo = firstTo;
     }
 
     public UUID getEntityId() {
@@ -21,4 +23,7 @@ public class GameCreatedEvent implements Event {
         return playerId;
     }
 
+    public int getFirstTo() {
+        return firstTo;
+    }
 }

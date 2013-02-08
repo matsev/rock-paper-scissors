@@ -6,8 +6,8 @@ import com.jayway.rps.command.JoinGameCommand;
 import com.jayway.rps.command.MakeChoiceCommand;
 import com.jayway.rps.event.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.jayway.rps.State.*;
 import static com.jayway.rps.command.Choice.PAPER;
@@ -25,12 +25,13 @@ public class GameAggregate  {
     private String firstPlayerId;
     private String secondPlayerId;
     private PlayerChoice firstChoice;
-
+    private int firstTo;
+    private Map<String, AtomicInteger> wins;
 
     @CommandHandler
     public List<? extends Event> handle(CreateGameCommand createGameCommand) {
         if (state == null) {
-            return asList(new GameCreatedEvent(createGameCommand.entityId(), createGameCommand.getPlayerId()));
+            return asList(new GameCreatedEvent(createGameCommand.entityId(), createGameCommand.getPlayerId(), createGameCommand.getFirstTo()));
         }
         return emptyList();
     }
@@ -55,7 +56,14 @@ public class GameAggregate  {
                 PlayerChoice secondChoice = makeChoiceCommand.getPlayerChoice();
                 // TODO implement game rules
                 if (firstChoice.getChoice() == ROCK && secondChoice.getChoice() == PAPER) {
-                    return asList(new RoundWonEvent(secondChoice.getPlayerId()));
+                    List<Event> events = new ArrayList<Event>();
+                    String winner = secondChoice.getPlayerId();
+                    events.add(new RoundWonEvent(winner));
+                    int numberOfWins = wins.get(winner).incrementAndGet();
+                    if (numberOfWins == firstTo) {
+                        events.add(new GameWonEvent(winner));
+                    }
+                    return events;
                 }
                 return asList(new RoundTiedEvent());
             default:
@@ -68,12 +76,16 @@ public class GameAggregate  {
         gameId = gameCreatedEvent.getEntityId();
         state = STARTED;
         firstPlayerId = gameCreatedEvent.getPlayerId();
+        firstTo = gameCreatedEvent.getFirstTo();
+        wins = new HashMap<String, AtomicInteger>();
+        wins.put(firstPlayerId, new AtomicInteger());
     }
 
     @EventHandler
     public void handle(GameStartedEvent gameStartedEvent) {
         state = WAITING_FOR_ROUND;
         secondPlayerId = gameStartedEvent.getPlayerId();
+        wins.put(gameStartedEvent.getPlayerId(), new AtomicInteger());
     }
 
     @EventHandler

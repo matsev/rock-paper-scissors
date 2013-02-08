@@ -27,7 +27,7 @@ public class GameAggregateTest {
 
     @Test
     public void createGame() {
-        List<? extends Event> events = gameAggregate.handle(new CreateGameCommand(playerA, gameId));
+        List<? extends Event> events = gameAggregate.handle(new CreateGameCommand(playerA, gameId, 3));
 
         assertThat(events, hasSize(1));
         assertThat(events.get(0), instanceOf(GameCreatedEvent.class));
