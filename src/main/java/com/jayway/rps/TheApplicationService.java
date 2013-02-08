@@ -19,17 +19,15 @@ public class TheApplicationService implements ApplicationService {
     public TheApplicationService(EventStore eventStore, Class<?> aggregateType) {
         this.eventStore = eventStore;
         this.aggregateType = aggregateType;
-        this.commandHandler =
-                new TheHandler<Command>();
-        this.eventHandler =
-                new TheHandler<Event>();
+        this.commandHandler = new TheHandler<Command>();
+        this.eventHandler = new TheHandler<Event>();
     }
 
     @Override
     public void handle(Command command) {
         EventStream stream = eventStore.loadEventStream(command.entityId());
         try {
-            Object aggregate = aggregateType.getClass().newInstance();
+            Object aggregate = aggregateType.newInstance();
             for (Event event : stream) {
                 eventHandler.handle(aggregate,event);
             }

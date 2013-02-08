@@ -1,10 +1,12 @@
 package com.jayway.rps;
 
 import com.jayway.rps.command.CreateGame;
+import com.jayway.rps.event.Event;
 import com.jayway.rps.event.GameCreated;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.instanceOf;
@@ -28,7 +30,8 @@ public class TheApplicationServiceTest {
         applicationService.handle(new CreateGame("morot", id));
         EventStream events = eventStore.loadEventStream(id);
 
-        assertThat(events.iterator().next(), instanceOf(GameCreated.class));
-        assertThat(events.iterator().hasNext(), is(false));
+        Iterator<Event> iterator = events.iterator();
+        assertThat(iterator.next(), instanceOf(GameCreated.class));
+        assertThat(iterator.hasNext(), is(false));
     }
 }
